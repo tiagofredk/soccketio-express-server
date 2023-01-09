@@ -6,26 +6,26 @@ const cors = require("cors");
 
 app.use(cors())
 app.use(express.json());
-const io = require("socket.io")(server, {
-    cors: {
-        origin: ["http://localhost:3000"],
-        methods: ["GET", "POST"]
-    },
-});
+// const io = require("socket.io")(server, {
+//     cors: {
+//         origin: ["http://localhost:3000"],
+//         methods: ["GET", "POST"]
+//     },
+// });
 
-io.on("connection", socket => {
+// io.on("connection", socket => {
 
-    console.log("User Connected", socket.id);
+//     console.log("User Connected", socket.id);
     
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
+//     socket.on('disconnect', () => {
+//         console.log('user disconnected');
+//     });
     
-    socket.on('chat message', (msg) => {
-        console.log('message: ' + msg);
-        io.emit("chat message", msg);
-    });
-});
+//     socket.on('chat message', (msg) => {
+//         console.log('message: ' + msg);
+//         io.emit("chat message", msg);
+//     });
+// });
 
 // app.get('/', (req, res) => {
 //     res.send('<h1>Socket Server</h1>');
