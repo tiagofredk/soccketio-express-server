@@ -1,11 +1,16 @@
 {
   "name": "socket-chat-server",
   "version": "0.0.0",
+  "description": "",
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "server": "node index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
