@@ -30,6 +30,7 @@ io.on("connection", socket => {
 // app.get('/', (req, res) => {
 //     res.send('<h1>Socket Server</h1>');
 // });
+
 app.get("/", (req, res)=> {
     res.send({
         status: 200,
