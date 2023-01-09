@@ -27,8 +27,14 @@ io.on("connection", socket => {
     });
 });
 
-app.get('/', (req, res) => {
-    res.send('<h1>Socket Server</h1>');
-});
+// app.get('/', (req, res) => {
+//     res.send('<h1>Socket Server</h1>');
+// });
+app.get("/", (req, res)=> {
+    res.send({
+        status: 200,
+        message: "Backend is working"
+    })
+})
 
 server.listen(5000, () => console.log("Server Running on port 5000"));
