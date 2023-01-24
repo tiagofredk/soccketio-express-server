@@ -1,41 +1,21 @@
 const express = require('express');
 const app = express();
+const cors = require("cors");
+const router = require('./routes/routes');
+const DBConnect = require('./db/dbConnection');
+const socketServer = require('./db/socketServer');
 const http = require('http');
 const server = http.createServer(app);
-const cors = require("cors");
 
+require("dotenv").config();
 app.use(cors())
 app.use(express.json());
-// const io = require("socket.io")(server, {
-//     cors: {
-//         origin: ["http://localhost:3000"],
-//         methods: ["GET", "POST"]
-//     },
-// });
 
-// io.on("connection", socket => {
+DBConnect();
 
-//     console.log("User Connected", socket.id);
-    
-//     socket.on('disconnect', () => {
-//         console.log('user disconnected');
-//     });
-    
-//     socket.on('chat message', (msg) => {
-//         console.log('message: ' + msg);
-//         io.emit("chat message", msg);
-//     });
-// });
+socketServer();
 
-// app.get('/', (req, res) => {
-//     res.send('<h1>Socket Server</h1>');
-// });
+app.use(router)
 
-app.get("/", (req, res)=> {
-    res.send({
-        status: 200,
-        message: "Backend is working"
-    })
-})
-
-app.listen(5000, () => console.log("Server Running on port 5000"));
+const PORT = 5001
+server.listen(PORT, () => console.log(`Server Running on port ${PORT}`));
