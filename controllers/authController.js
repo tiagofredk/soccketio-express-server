@@ -1,6 +1,8 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const login = async (req, res, next) => {
-    console.log(req.body);
+    
     const { email, password } = req.body
     if (!email ) {
         return res.status(400).json('Bad request params - email');
@@ -13,7 +15,10 @@ const login = async (req, res, next) => {
         status: 200,
         response: "received body"
     })
+}
 
+const newUser = async (req, res, next) => {
+    
 }
 
 module.exports = {
