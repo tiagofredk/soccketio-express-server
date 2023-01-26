@@ -4,6 +4,8 @@ const authController = require("../controllers/authController")
 
 router.post("/login", authController.login );
 
+router.post("/register", authController.register );
+
 router.get('/', function(req, res, next) {
   res.send(`<h1 style={{text-align: "center"}}>Express Socket Server</h1>`);
 });
