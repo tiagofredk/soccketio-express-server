@@ -5,6 +5,10 @@ const jwt = require("jsonwebtoken");
 
 // User schema
 const UserSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true
+    },
     username: {
         type: String,
         required: [true, "Please provide username"],
@@ -70,7 +74,7 @@ const projectSchema = new mongoose.Schema({
 UserSchema.add({
     projects: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'projects'
+        ref: 'Project'
     }]
 });
 
@@ -78,7 +82,7 @@ UserSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         next();
     }
-    
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
@@ -95,23 +99,24 @@ UserSchema.methods.getSignedJwtToken = function () {
 };
 
 // UserSchema.methods.getResetPasswordToken = function () {
-    //     const resetToken = crypto.randomBytes(20).toString("hex");
-    
-    //     // Hash token (private key) and save to database
-    //     this.resetPasswordToken = crypto
-    //         .createHash("sha256")
-    //         .update(resetToken)
-    //         .digest("hex");
-    
-    //     // Set token expire date
-    //     this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
-    
-    //     return resetToken;
-    // };
-    
-    const User = mongoose.model('users', UserSchema);
-    const Project = mongoose.model('projects', projectSchema);
-    module.exports = {
-        User,
-        Project
-    }
+//     const resetToken = crypto.randomBytes(20).toString("hex");
+
+//     // Hash token (private key) and save to database
+//     this.resetPasswordToken = crypto
+//         .createHash("sha256")
+//         .update(resetToken)
+//         .digest("hex");
+
+//     // Set token expire date
+//     this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
+
+//     return resetToken;
+// };
+
+const User = mongoose.model('users', UserSchema);
+const Project = mongoose.model('projects', projectSchema);
+
+module.exports = {
+    User,
+    Project
+}
