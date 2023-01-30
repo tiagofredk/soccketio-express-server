@@ -12,12 +12,12 @@ const login = async (req, res, next) => {
         // Check that user exists by email
         const user = await User.findOne({ email }).select("+password");
         if (!user) {
-            return next(new ErrorResponse("Invalid credentials", 401));
+            return next(new ErrorResponse("Invalid email", 401));
         }
         // Check that password match
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
-            return next(new ErrorResponse("Invalid credentials", 401));
+            return next(new ErrorResponse("Invalid password", 401));
         }
         sendToken(user, 200, res);
     } catch (err) {
@@ -27,23 +27,25 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
     const { username, email, password, activeProject } = req.body;
-    const user = await User.findOne({email})
-
-    console.log(user);
-    // try {
-    //     const user = await User.create({
-    //         username,
-    //         email,
-    //         id: uuidv4(),
-    //         password,
-    //         activeProject
-    //     });
-    //     // console.log(user)
-    //     createProject(user)
-    //     sendToken(user, 200, res);
-    // } catch (error) {
-    //     next(error)
-    // }
+    const user = await User.findOne({ email })
+    try {
+        if (!user) {
+            const user = await User.create({
+                username,
+                email,
+                id: uuidv4(),
+                password,
+                activeProject
+            });
+            createProject(user)
+            sendToken(user, 201, res);
+        } else {
+            // return next(new ErrorResponse(" Email Already registered, please check your data", 401))
+            res.send({ status: 409, message: " Email Already registered, please check your data" })
+        }
+    } catch (error) {
+        next(error)
+    }
 }
 
 const createProject = async (user) => {
