@@ -19,10 +19,23 @@ const login = async (req, res, next) => {
         if (!isMatch) {
             return next(new ErrorResponse("Invalid password", 401));
         }
-        sendToken(user, 200, res);
+
+        // sendToken(user, 200, req, res);
+        createSession(user, 200, req, res)
     } catch (err) {
         next(err);
     }
+}
+
+const createSession = (user, statusCode, req, res) => {
+    console.log(req.session);
+    console.log(req.sessionID);
+    req.session.autenticated = true
+    res.status(statusCode).json(
+        {
+            sucess: true,
+            session: req.session
+        });
 }
 
 const register = async (req, res, next) => {
@@ -87,15 +100,21 @@ const createProject = async (user) => {
     })
 }
 
-const sendToken = (user, statusCode, res) => {
+const sendToken = (user, statusCode, req, res) => {
+    console.log(req.session);
+    console.log(req.sessionID);
+    req.session.autenticated = true
     const token = user.getSignedJwtToken();
-    res.status(statusCode).json({ sucess: true, token });
+    res.status(statusCode).json(
+        {
+            sucess: true,
+            session: req.session
+        });
 };
 
-function verifyToken(req, res, next) {
+const verifyToken = async (req, res, next) => {
     const token = req.headers['x-access-token'];
     if (!token) return res.status(401).send('Token não fornecido');
-
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) return res.status(500).send('Token inválido');
         req.userId = decoded.userId;

@@ -19,8 +19,8 @@ router.get('/', function(req, res, next) {
   }
 });
 /* GET home page. */
-app.get('/protegido', authController.verifyToken, (req, res) => {
-  // rota protegida aqui
-});
+// app.get('/protegido', authController.verifyToken, (req, res) => {
+//   // rota protegida aqui
+// });
 
 module.exports = router;
