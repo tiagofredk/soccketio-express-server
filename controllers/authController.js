@@ -19,7 +19,6 @@ const login = async (req, res, next) => {
         if (!isMatch) {
             return next(new ErrorResponse("Invalid password", 401));
         }
-
         // sendToken(user, 200, req, res);
         createSession(user, 200, req, res)
     } catch (err) {
@@ -29,13 +28,14 @@ const login = async (req, res, next) => {
 
 const createSession = (user, statusCode, req, res) => {
     console.log(req.session);
-    console.log(req.sessionID);
-    req.session.autenticated = true
-    res.status(statusCode).json(
-        {
-            sucess: true,
-            session: req.session
-        });
+    res.sendStatus(statusCode).json({success: true})
+    // console.log(req.sessionID);
+    // req.session.autenticated = true
+    // res.status(statusCode).json(
+    //     {
+    //         sucess: true,
+    //         session: req.session
+    //     });
 }
 
 const register = async (req, res, next) => {

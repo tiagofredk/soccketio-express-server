@@ -12,10 +12,13 @@ const client = redis.createClient({
     password: 'T625qmvVjmDZrLlUNqaVH7tBZSybWgG8'
 });
 
-client.on('error', err => console.log('Redis Client Error', err));
+client.on('error', async (err) => {
+    await client.connect();
+    
+    await client.set('foo', 'bar');
 
-client.connect();
+    console.log('Redis Client Error', err)
+});
 
-client.set('foo', 'bar');
 
 module.exports = client;

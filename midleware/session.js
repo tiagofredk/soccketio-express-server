@@ -2,11 +2,11 @@ const client = require("../db/redis");
 const session = require("express-session");
 const connectRedis = require('connect-redis');
 let RedisStore = connectRedis(session);
-const store = new session.MemoryStore()
+// const store = new session.MemoryStore()
 
 module.exports = session({
-    // store: new RedisStore({ client: client }),
-    store,
+    store: new RedisStore({ client: client }),
+    // store,
     secret: "keyboard cat",
     saveUninitialized: false,
     resave: false,
