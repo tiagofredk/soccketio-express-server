@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const app = express();
 const cors = require("cors");
@@ -8,7 +9,7 @@ const http = require('http');
 const server = http.createServer(app);
 const session = require("./midleware/session");
 
-require("dotenv").config();
+app.use(session);
 app.use(cors())
 app.use(express.json());
 
@@ -16,7 +17,6 @@ DBConnect();
 
 // socketServer();
 
-app.use(session);
 app.use(router);
 
 const PORT = 5002

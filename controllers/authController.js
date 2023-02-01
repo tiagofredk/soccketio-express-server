@@ -19,23 +19,26 @@ const login = async (req, res, next) => {
         if (!isMatch) {
             return next(new ErrorResponse("Invalid password", 401));
         }
-        // sendToken(user, 200, req, res);
-        createSession(user, 200, req, res)
+        sendToken(user, 200, req, res);
+        // createSession(user, 200, req, res)
+        // console.log(req.session);
+        // console.log(req.sessionID);
+        // res.status(200).send({success: true})
     } catch (err) {
         next(err);
     }
 }
 
-const createSession = (user, statusCode, req, res) => {
+const createSession = async (user, statusCode, req, res) => {
     console.log(req.session);
-    res.sendStatus(statusCode).json({success: true})
-    // console.log(req.sessionID);
-    // req.session.autenticated = true
-    // res.status(statusCode).json(
-    //     {
-    //         sucess: true,
-    //         session: req.session
-    //     });
+    console.log(req.sessionID);
+    req.session.autenticated = true
+    res.status(statusCode).json(
+        {
+            sucess: true,
+            session: req.session
+        });
+    // res.status(statusCode).send({ success: true })
 }
 
 const register = async (req, res, next) => {
@@ -50,8 +53,8 @@ const register = async (req, res, next) => {
                 password,
                 activeProject
             });
-            createProject(user)
-            sendToken(user, 201, res);
+            await createProject(user)
+            await sendToken(user, 201, req, res);
         } else {
             // return next(new ErrorResponse(" Email Already registered, please check your data", 401))
             res.send({ status: 409, message: " Email Already registered, please check your data" })
@@ -103,7 +106,7 @@ const createProject = async (user) => {
 const sendToken = (user, statusCode, req, res) => {
     console.log(req.session);
     console.log(req.sessionID);
-    req.session.autenticated = true
+    // req.session.autenticated = true
     const token = user.getSignedJwtToken();
     res.status(statusCode).json(
         {
