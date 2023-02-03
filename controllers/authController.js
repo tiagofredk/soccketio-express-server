@@ -3,6 +3,8 @@ const { User, Project } = require("../schemas/schemas");
 const { v4: uuidv4 } = require('uuid');
 
 const login = async (req, res, next) => {
+    console.log("Print Login Session");
+    console.log(req.session)
     const { email, password } = req.body
     // Check if email and password is provided
     if (!email || !password) {
@@ -30,9 +32,13 @@ const login = async (req, res, next) => {
 }
 
 const createSession = async (user, statusCode, req, res) => {
+    user.password = null;
     console.log(req.session);
     console.log(req.sessionID);
-    req.session.autenticated = true
+    req.session.authenticated = true
+    console.log("user");
+    console.log(user)
+    req.session.user = user;
     res.status(statusCode).json(
         {
             sucess: true,
