@@ -10,7 +10,14 @@ const server = http.createServer(app);
 const session = require("./midleware/session");
 
 app.use(session);
-app.use(cors())
+
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 DBConnect();
@@ -20,4 +27,4 @@ DBConnect();
 app.use(router);
 
 const PORT = 5002
-server.listen(PORT, () => console.log(`Server Running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server Running on port ${PORT}`));

@@ -19,8 +19,8 @@ const login = async (req, res, next) => {
         if (!isMatch) {
             return next(new ErrorResponse("Invalid password", 401));
         }
-        sendToken(user, 200, req, res);
-        // createSession(user, 200, req, res)
+        // sendToken(user, 200, req, res);
+        createSession(user, 200, req, res)
         // console.log(req.session);
         // console.log(req.sessionID);
         // res.status(200).send({success: true})
@@ -125,8 +125,14 @@ const verifyToken = async (req, res, next) => {
     });
 }
 
+const logout = async (req, res)=> {
+        req.session.destroy();
+        res.redirect('/');
+}
+
 module.exports = {
     login,
     register,
-    verifyToken
+    verifyToken,
+    logout
 }
