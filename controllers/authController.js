@@ -11,21 +11,31 @@ const login = async (req, res, next) => {
         return next(new ErrorResponse("Please provide an email and password", 400));
     }
     try {
-        // Check that user exists by email
-        const user = await User.findOne({ email }).select("+password");
-        if (!user) {
-            return next(new ErrorResponse("Invalid email", 401));
+        if (req.session.authenticated) {
+            console.log("if login")
+            res.status(200).json(
+                {
+                    sucess: true,
+                    session: req.session
+                });
+        }else{
+            console.log("else login")
+            // Check that user exists by email
+            const user = await User.findOne({ email }).select("+password");
+            if (!user) {
+                return next(new ErrorResponse("Invalid email", 401));
+            }
+            // Check that password match
+            const isMatch = await user.matchPassword(password);
+            if (!isMatch) {
+                return next(new ErrorResponse("Invalid password", 401));
+            }
+            // sendToken(user, 200, req, res);
+            createSession(user, 200, req, res)
+            // console.log(req.session);
+            // console.log(req.sessionID);
+            // res.status(200).send({success: true})
         }
-        // Check that password match
-        const isMatch = await user.matchPassword(password);
-        if (!isMatch) {
-            return next(new ErrorResponse("Invalid password", 401));
-        }
-        // sendToken(user, 200, req, res);
-        createSession(user, 200, req, res)
-        // console.log(req.session);
-        // console.log(req.sessionID);
-        // res.status(200).send({success: true})
     } catch (err) {
         next(err);
     }
@@ -131,9 +141,9 @@ const verifyToken = async (req, res, next) => {
     });
 }
 
-const logout = async (req, res)=> {
-        req.session.destroy();
-        res.redirect('/');
+const logout = async (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
 }
 
 module.exports = {
