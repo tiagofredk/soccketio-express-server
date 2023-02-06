@@ -20,7 +20,7 @@ module.exports = session({
     cookie: {
         secure: false,
         httpOnly: true, // if true: prevents client side JS from reading the cookie
-        maxAge: 1000 * 30 , // session max age in milliseconds
+        maxAge: 1000 * 60 * 60 , // session max age in milliseconds
         // explicitly set cookie to lax
         // to make sure that all cookies accept it
         // you should never use none anyway
