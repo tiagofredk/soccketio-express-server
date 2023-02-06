@@ -18,7 +18,7 @@ const login = async (req, res, next) => {
                     sucess: true,
                     session: req.session
                 });
-        }else{
+        } else {
             console.log("else login")
             // Check that user exists by email
             const user = await User.findOne({ email }).select("+password");
@@ -70,10 +70,11 @@ const register = async (req, res, next) => {
                 activeProject
             });
             await createProject(user)
-            await sendToken(user, 201, req, res);
+            // await sendToken(user, 201, req, res);
+            await createSession(user, 201, req, res);
         } else {
             // return next(new ErrorResponse(" Email Already registered, please check your data", 401))
-            res.send({ status: 409, message: " Email Already registered, please check your data" })
+            response(res, 409, " Email Already registered, please check your data")
         }
     } catch (error) {
         next(error)
@@ -119,36 +120,40 @@ const createProject = async (user) => {
     })
 }
 
-const sendToken = (user, statusCode, req, res) => {
-    console.log(req.session);
-    console.log(req.sessionID);
-    // req.session.autenticated = true
-    const token = user.getSignedJwtToken();
-    res.status(statusCode).json(
-        {
-            sucess: true,
-            session: req.session
-        });
-};
+// const sendToken = (user, statusCode, req, res) => {
+//     console.log(req.session);
+//     console.log(req.sessionID);
+//     // req.session.autenticated = true
+//     const token = user.getSignedJwtToken();
+//     res.status(statusCode).json(
+//         {
+//             sucess: true,
+//             session: req.session
+//         });
+// };
 
-const verifyToken = async (req, res, next) => {
-    const token = req.headers['x-access-token'];
-    if (!token) return res.status(401).send('Token não fornecido');
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(500).send('Token inválido');
-        req.userId = decoded.userId;
-        next();
-    });
-}
+// const verifyToken = async (req, res, next) => {
+//     const token = req.headers['x-access-token'];
+//     if (!token) return res.status(401).send('Token não fornecido');
+//     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//         if (err) return res.status(500).send('Token inválido');
+//         req.userId = decoded.userId;
+//         next();
+//     });
+// }
 
 const logout = async (req, res) => {
     req.session.destroy();
-    res.redirect('/');
+    response(res, 200, "Session destroyed");
+}
+
+const response = (res, code, message) => {
+    res.status(code).send({ status: code, message: message })
 }
 
 module.exports = {
     login,
     register,
-    verifyToken,
+    // verifyToken,
     logout
 }
