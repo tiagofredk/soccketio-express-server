@@ -1,12 +1,5 @@
 const authenticate = async (req, res, next) => {
     console.log("PROTECT PROTECT PROTECT PROTECT PROTECT PROTECT ")
-    // console.log(req.body);
-    console.log(req.session);
-    const {withCredentials} = req.body
-    if (withCredentials){
-        // console.log("print session")
-        // console.log(req.session);
-    }
     if (!req.session.authenticated || !req.session.user) {
         const err = new Error('You shall not pass');
         err.statusCode = 401;
