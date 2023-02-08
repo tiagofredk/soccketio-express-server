@@ -32,30 +32,12 @@ const login = async (req, res, next) => {
             }
             // sendToken(user, 200, req, res);
             createSession(user, 200, req, res)
-            // console.log(req.session);
-            // console.log(req.sessionID);
-            // res.status(200).send({success: true})
         }
     } catch (err) {
         next(err);
     }
 }
 
-const createSession = async (user, statusCode, req, res) => {
-    user.password = null;
-    console.log(req.session);
-    console.log(req.sessionID);
-    req.session.authenticated = true
-    console.log("user");
-    console.log(user)
-    req.session.user = user;
-    res.status(statusCode).json(
-        {
-            sucess: true,
-            session: req.session
-        });
-    // res.status(statusCode).send({ success: true })
-}
 
 const register = async (req, res, next) => {
     const { username, email, password, activeProject } = req.body;
@@ -120,17 +102,30 @@ const createProject = async (user) => {
     })
 }
 
-// const sendToken = (user, statusCode, req, res) => {
-//     console.log(req.session);
-//     console.log(req.sessionID);
-//     // req.session.autenticated = true
-//     const token = user.getSignedJwtToken();
-//     res.status(statusCode).json(
-//         {
-//             sucess: true,
-//             session: req.session
-//         });
-// };
+const createSession = async (user, statusCode, req, res) => {
+    user.password = null;
+    // console.log(req.session);
+    // console.log(req.sessionID);
+    req.session.authenticated = true
+    // console.log("user");
+    // console.log(user);
+    req.session.user = user;
+    res.status(statusCode).json(
+        {
+            sucess: true,
+            session: req.session
+        });
+}
+
+const sendToken = (user, statusCode, req, res) => {
+    // req.session.autenticated = true
+    const token = user.getSignedJwtToken();
+    res.status(statusCode).json(
+        {
+            sucess: true,
+            session: req.session
+        });
+};
 
 // const verifyToken = async (req, res, next) => {
 //     const token = req.headers['x-access-token'];

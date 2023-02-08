@@ -11,7 +11,7 @@ const session = require("./midleware/session");
 
 app.use(session);
 
-const corsOptions ={
+const corsOptions = {
     origin:'http://localhost:3000', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
