@@ -1,10 +1,11 @@
 const ErrorResponse = require("../utils/errorResponse");
 const { User, Project } = require("../schemas/schemas");
 const { v4: uuidv4 } = require('uuid');
+const jwt = require("jsonwebtoken");
 
 const login = async (req, res, next) => {
     console.log("Print Login Session");
-    console.log(req.session)
+    // console.log(req.session)
     const { email, password } = req.body
     // Check if email and password is provided
     if (!email || !password) {
@@ -12,14 +13,15 @@ const login = async (req, res, next) => {
     }
     try {
         if (req.session.authenticated) {
-            console.log("if login")
+            console.log("**************************************          if login")
+            console.log(req.session)
             res.status(200).json(
                 {
                     sucess: true,
                     session: req.session
                 });
         } else {
-            console.log("else login")
+            console.log("**************************************          else login")
             // Check that user exists by email
             const user = await User.findOne({ email }).select("+password");
             if (!user) {
@@ -103,18 +105,23 @@ const createProject = async (user) => {
 }
 
 const createSession = async (user, statusCode, req, res) => {
+    const token = user.getSignedJwtToken();
+    console.log(token);
     user.password = null;
     // console.log(req.session);
     // console.log(req.sessionID);
-    req.session.authenticated = true
     // console.log("user");
     // console.log(user);
+    req.session.token = token;
+    req.session.authenticated = true
     req.session.user = user;
+    console.log(req.session)
     res.status(statusCode).json(
         {
             sucess: true,
             session: req.session
         });
+
 }
 
 const sendToken = (user, statusCode, req, res) => {
@@ -127,15 +134,15 @@ const sendToken = (user, statusCode, req, res) => {
         });
 };
 
-// const verifyToken = async (req, res, next) => {
-//     const token = req.headers['x-access-token'];
-//     if (!token) return res.status(401).send('Token não fornecido');
-//     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//         if (err) return res.status(500).send('Token inválido');
-//         req.userId = decoded.userId;
-//         next();
-//     });
-// }
+const verifyToken = async (req, res, next) => {
+    const token = req.headers['x-access-token'];
+    if (!token) return res.status(401).send('Token não fornecido');
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.status(500).send('Token inválido');
+        req.userId = decoded.userId;
+        next();
+    });
+}
 
 const logout = async (req, res) => {
     req.session.destroy();
@@ -149,6 +156,6 @@ const response = (res, code, message) => {
 module.exports = {
     login,
     register,
-    // verifyToken,
+    verifyToken,
     logout
 }

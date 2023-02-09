@@ -9,9 +9,32 @@ router.post("/register", authController.register);
 
 router.get("/logout", (authController.logout));
 
+router.post('/test2', function (req, res, next) {
+  console.log("***********************                  Route unprotected TEST")
+  console.log(req.session);
+  try {
+    res.status(200).json({
+      message: "Route unprotected TEST",
+      session: req.session
+    });
+  } catch (error) {
+    next(error)
+  }
+});
+
 // after this point routes are protected
 router.use(protect)
 
+router.post('/test', function (req, res, next) {
+  try {
+    res.status(200).json({
+      message: "Route TEST",
+      session: req.session
+    });
+  } catch (error) {
+    next(error)
+  }
+});
 router.get('/root', function (req, res, next) {
   try {
     // res.send(`<h1 style={{text-align: "center"}}>Express Socket Server</h1>`);
@@ -21,17 +44,6 @@ router.get('/root', function (req, res, next) {
   }
 });
 
-router.get('/test', function (req, res, next) {
-  try {
-    res.status(200).json({
-      session: req.session,
-      sessionID: req.sessionID,
-      authenticated: true
-    });
-  } catch (error) {
-    next(error)
-  }
-});
 
 /* GET home page. */
 // app.get('/protegido', authController.verifyToken, (req, res) => {
