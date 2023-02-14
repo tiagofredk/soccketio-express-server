@@ -53,17 +53,17 @@ const register = async (req, res, next) => {
                 password,
                 activeProject
             });
-            await createProject(user)
-            // await sendToken(user, 201, req, res);
+            await createProject(user);
             await createSession(user, 201, req, res);
         } else {
             // return next(new ErrorResponse(" Email Already registered, please check your data", 401))
-            response(res, 409, " Email Already registered, please check your data")
+            response(res, 409, " Email Already registered, please check your data");
         }
     } catch (error) {
         next(error)
     }
 }
+
 
 const createProject = async (user) => {
     const { activeProject, id, username } = user;
@@ -102,6 +102,24 @@ const createProject = async (user) => {
             }]
         }]
     })
+    console.log("**********        User schemma create Project")
+    console.log(user)
+    return project
+}
+
+const newProject = async (req, res, next) => {
+    const { activeProject, id, username } = req.body.user;
+    console.log(activeProject, id, username);
+    const user = await User.findOne({id})
+    user.activeProject = activeProject;
+    const resNewProject = await createProject(user);
+    console.log("**************        console log resNewProject");
+    console.log(resNewProject.id);
+    user.projects.push(1);
+    console.log("************** User")
+    console.log(user);
+    user.save();
+    res.status(201).send({status: 201, message: `new Project ${activeProject}`});
 }
 
 const createSession = async (user, statusCode, req, res) => {
@@ -157,5 +175,6 @@ module.exports = {
     login,
     register,
     verifyToken,
-    logout
+    logout,
+    newProject
 }
