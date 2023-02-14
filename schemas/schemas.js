@@ -31,6 +31,7 @@ const UserSchema = new mongoose.Schema({
     activeProject: { type: String },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    projects: {type: Array}
 });
 
 // Project schema

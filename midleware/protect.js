@@ -6,8 +6,7 @@ const authenticate = async (req, res, next) => {
     console.log("******************        req.body req.body req.body req.body req.body req.body req.body req.body")
     console.log(req.body);
     if (!req.session.authenticated || 
-        !req.session.user ||
-        !req.session.token || 
+        !req.session.user || 
         req.body.sessionToken != req.session.token) {
             
         const err = new Error('You shall not pass');

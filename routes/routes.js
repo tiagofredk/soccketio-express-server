@@ -3,13 +3,13 @@ const router = express.Router();
 const authController = require("../controllers/authController")
 const protect = require("../midleware/protect")
 
-router.post("/login", authController.login);
+router.post("/api/login", authController.login);
 
-router.post("/register", authController.register);
+router.post("/api/register", authController.register);
 
-router.get("/logout", (authController.logout));
+router.get("/api/logout", (authController.logout));
 
-router.post('/test2', function (req, res, next) {
+router.post('/api/test2', (req, res, next) => {
   console.log("***********************                  Route unprotected TEST")
   console.log(req.session);
   try {
@@ -25,20 +25,22 @@ router.post('/test2', function (req, res, next) {
 // after this point routes are protected
 router.use(protect)
 
-router.post('/test', function (req, res, next) {
+router.post("/api/newproject", (authController.newProject));
+
+router.post('/api/test', (req, res, next) => {
   try {
     res.status(200).json({
       message: "Route TEST",
       session: req.session
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 });
-router.get('/root', function (req, res, next) {
+router.get('/api/root', (req, res, next) => {
   try {
     // res.send(`<h1 style={{text-align: "center"}}>Express Socket Server</h1>`);
-    res.send({success:"ok"})
+    res.send({ success: "ok" })
   } catch (error) {
     next(error)
   }
