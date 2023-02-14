@@ -25,7 +25,7 @@ router.post('/api/test2', (req, res, next) => {
 // after this point routes are protected
 router.use(protect)
 
-router.post("/api/newproject",(authController.newProject));
+router.post("/api/newproject", (authController.newProject));
 
 router.post('/api/test', (req, res, next) => {
   try {
@@ -34,13 +34,13 @@ router.post('/api/test', (req, res, next) => {
       session: req.session
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 });
 router.get('/api/root', (req, res, next) => {
   try {
     // res.send(`<h1 style={{text-align: "center"}}>Express Socket Server</h1>`);
-    res.send({success:"ok"})
+    res.send({ success: "ok" })
   } catch (error) {
     next(error)
   }

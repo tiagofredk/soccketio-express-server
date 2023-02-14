@@ -65,8 +65,8 @@ const register = async (req, res, next) => {
 }
 
 
-const createProject = async (user) => {
-    const { activeProject, id, username } = user;
+const createProject = async (req) => {
+    const { activeProject, id, username } = req.body.user;
     const project = await Project.create({
         id: uuidv4(),
         name: activeProject,
@@ -102,25 +102,71 @@ const createProject = async (user) => {
             }]
         }]
     })
-    console.log("**********        User schemma create Project")
-    console.log(user)
+    // console.log("**********        User schemma create Project")
+    // console.log(user)
     return project
 }
 
+// const newProject = async (req, res, next) => {
+//     const { activeProject, id, username } = req.body.user;
+//     console.log(activeProject, id, username);
+//     /* const user = await  */User.findOne({ id }, async (err, user) => {
+//         if (err){
+//             console.log(err)
+//         }else{
+//             console.log("***************                          USER.findOne on new Project")
+//             console.log(user);
+//             user.activeProject = activeProject;
+//             const resNewProject = await createProject(req);
+//             console.log("**************                           console log resNewProject");
+//             console.log(resNewProject.id);
+//             user.projects.push(resNewProject.id);
+//             // {$push: { projects: 1234567890 }}
+//             console.log("**************                           User");
+//             console.log(user);
+//             user.save((err, updatedUser) => {
+//                 if (err){
+//                     res.status(400).send({message: err})
+//                 }else{
+//                     res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
+//                 }
+//             });
+//         }
+//     });
+// }
+
 const newProject = async (req, res, next) => {
-    const { activeProject, id, username } = req.body.user;
-    console.log(activeProject, id, username);
-    const user = await User.findOne({id})
-    user.activeProject = activeProject;
-    const resNewProject = await createProject(user);
-    console.log("**************        console log resNewProject");
-    console.log(resNewProject.id);
-    user.projects.push(1);
-    console.log("************** User")
-    console.log(user);
-    user.save();
-    res.status(201).send({status: 201, message: `new Project ${activeProject}`});
-}
+    const { activeProject, _id, username } = req.body.user;
+    console.log(activeProject, _id, username);
+
+    try {
+        const user = await User.findOne({ _id }).exec();
+        console.log("***************                          USER.findOne on new Project")
+        console.log(user);
+        user.activeProject = activeProject;
+        const resNewProject = await createProject(req);
+        console.log("**************                           console log resNewProject");
+        console.log(resNewProject._id);
+        user.projects.push(resNewProject._id);
+        // {$push: { projects: 1234567890 }}
+        console.log("**************                           User");
+        console.log(user);
+        const updatedUser = await user.save((err, updatedUser) => {
+            if (err) {
+                console.log(err);
+                res.status(400).send({ message: err });
+            } else {
+                console.log(updatedUser);
+                res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
+            }
+        });
+        res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
+    } catch (err) {
+        console.log("catch error");
+        console.log(err);
+        res.status(400).send({ message: err });
+    }
+};
 
 const createSession = async (user, statusCode, req, res) => {
     const token = user.getSignedJwtToken();
