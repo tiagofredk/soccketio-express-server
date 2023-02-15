@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 
 // User schema
 const UserSchema = new mongoose.Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true,
-    },
+    // _id: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     auto: true,
+    // },
     username: {
         type: String,
         required: [true, "Please provide username"],
@@ -36,7 +36,7 @@ const UserSchema = new mongoose.Schema({
 
 // Project schema
 const projectSchema = new mongoose.Schema({
-    id: { type: String, required: true },
+    // id: { type: String, required: true },
     name: { type: String, required: true },
     ownerId: { type: String, required: true },
     members: [{
@@ -44,27 +44,27 @@ const projectSchema = new mongoose.Schema({
         name: { type: String, required: true }
     }],
     channels: [{
-        id: { type: String, required: true },
+        // id: { type: String, required: true },
         name: { type: String, required: true },
         messages: [{
-            id: { type: String, required: true },
+            // id: { type: String, required: true },
             text: { type: String, required: true },
             user: {
                 name: { type: String, required: true },
-                id: { type: String, required: true }
+                // id: { type: String, required: true }
             },
             timestamp: { type: Date, default: Date.now }
         }]
     }],
     directMessages: [{
-        id: { type: String, required: true },
+        // id: { type: String, required: true },
         name: { type: String, required: true },
         messages: [{
-            messageId: { type: String, required: true },
+            // messageId: { type: String, required: true },
             text: { type: String, required: true },
             user: {
                 name: { type: String, required: true },
-                id: { type: String, required: true }
+                // id: { type: String, required: true }
             },
             timestamp: { type: Date, default: Date.now }
         }]
