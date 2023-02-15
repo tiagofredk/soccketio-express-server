@@ -137,33 +137,32 @@ const createProject = async (req) => {
 
 const newProject = async (req, res, next) => {
     const { activeProject, _id, username } = req.body.user;
-    console.log(activeProject, _id, username);
-
+    // console.log(activeProject, _id, username);
     try {
         const user = await User.findOne({ _id }).exec();
-        console.log("***************                          USER.findOne on new Project")
-        console.log(user);
+        // console.log("***************                          USER.findOne on new Project")
+        // console.log(user);
         user.activeProject = activeProject;
         const resNewProject = await createProject(req);
-        console.log("**************                           console log resNewProject");
-        console.log(resNewProject._id);
+        // console.log("**************                           console log resNewProject");
+        // console.log(resNewProject._id);
         user.projects.push(resNewProject._id);
         // {$push: { projects: 1234567890 }}
-        console.log("**************                           User");
-        console.log(user);
+        // console.log("**************                           User");
+        // console.log(user);
         const updatedUser = await user.save((err, updatedUser) => {
             if (err) {
-                console.log(err);
+                // console.log(err);
                 res.status(400).send({ message: err });
             } else {
-                console.log(updatedUser);
+                // console.log(updatedUser);
                 res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
             }
         });
-        res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
+        // res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
     } catch (err) {
-        console.log("catch error");
-        console.log(err);
+        // console.log("catch error");
+        // console.log(err);
         res.status(400).send({ message: err });
     }
 };
