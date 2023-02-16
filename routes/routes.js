@@ -46,6 +46,8 @@ router.get('/api/root', (req, res, next) => {
   }
 });
 
+router.delete("/api/deleteproject", (authController.deleteProject));
+
 
 /* GET home page. */
 // app.get('/protegido', authController.verifyToken, (req, res) => {

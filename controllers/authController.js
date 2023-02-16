@@ -2,6 +2,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const { User, Project } = require("../schemas/schemas");
 const { v4: uuidv4 } = require('uuid');
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 const login = async (req, res, next) => {
     console.log("Print Login Session");
@@ -42,7 +43,7 @@ const login = async (req, res, next) => {
 
 
 const register = async (req, res, next) => {
-    const { username, email, password, activeProject } = req.body;
+    const { username, email, password } = req.body;
     const user = await User.findOne({ email })
     try {
         if (!user) {
@@ -51,21 +52,20 @@ const register = async (req, res, next) => {
                 email,
                 // id: uuidv4(),
                 password,
-                activeProject
+                activeProject: "DF"
             });
             console.log("***************                     newUser variable")
             console.log(newUser)
             const _id = newUser
-            const updateNewUser = await User.findOne( _id ).exec();
-            updateNewUser.activeProject = activeProject;
+            const updateNewUser = await User.findOne(_id).exec();
             const resNewProject = await createProject(updateNewUser);
             updateNewUser.projects.push(resNewProject._id);
             const updatedUser = await updateNewUser.save((err, updatedUser) => {
                 if (err) {
-                    console.log(err);
+                    // console.log(err);
                     res.status(400).send({ message: err });
                 } else {
-                    console.log(updatedUser);
+                    // console.log(updatedUser);
                     createSession(updateNewUser, 201, req, res);
                 }
             });
@@ -141,7 +141,7 @@ const newProject = async (req, res, next) => {
     } catch (err) {
         // console.log("catch error");
         // console.log(err);
-        res.status(400).send({ message: err });
+        res.status(500).send({ message: "Server error" });
     }
 };
 
@@ -162,7 +162,6 @@ const createSession = async (user, statusCode, req, res) => {
             sucess: true,
             session: req.session
         });
-
 }
 
 const sendToken = (user, statusCode, req, res) => {
@@ -173,6 +172,54 @@ const sendToken = (user, statusCode, req, res) => {
             sucess: true,
             session: req.session
         });
+};
+
+// const deleteProject = async (req, res, next) => {
+//     const { projectId, user } = req.body;
+//     console.log("********************* delete req.body");
+//     console.log(req.body);
+//     try {
+//         if (!projectId) {
+//             res.status(400).send({ status: 400, message: "Provide the ID of the project" });
+//             return;
+//         }
+//         const project = await Project.findOneAndDelete({ "_id": projectId });
+//         if (!project) {
+//             res.status(404).send({ status: 404, message: "Project not found" });
+//             return;
+//         }
+//         res.status(200).send({ status: 200, message: "Deleted project" });
+//     } catch (error) {
+//         console.log("*********************                     Catch error");
+//         console.log(error);
+//         res.status(500).send({ status: 500, message: "Server error" });
+//     }
+// };
+
+const deleteProject = async (req, res, next) => {
+    const { projectId, user } = req.body;
+    const { _id } = req.body.user;
+    try {
+        if (!user || !projectId) {
+            res.status(400).send({ status: 400, message: "Provide the ID of the project" });
+            return;
+        }
+        const userProjectOwner = await User.findOne({ _id }).exec();
+        if (!userProjectOwner) {
+            res.status(400).send({ status: 400, message: "bad request, user not found" });
+        } else {
+            userProjectOwner.projects = userProjectOwner.projects.filter(project => project.toString() !== projectId);
+            await userProjectOwner.save();
+            const project = await Project.findOneAndDelete({ "_id": projectId });
+            if (!project) {
+                res.status(404).send({ status: 404, message: "Project not found" });
+                return;
+            }
+            res.status(200).send({ status: 200, message: "Deleted project" });
+        }
+    } catch (error) {
+        res.status(500).send({ status: 500, message: "Server error" });
+    }
 };
 
 const verifyToken = async (req, res, next) => {
@@ -199,5 +246,6 @@ module.exports = {
     register,
     verifyToken,
     logout,
-    newProject
+    newProject,
+    deleteProject
 }
