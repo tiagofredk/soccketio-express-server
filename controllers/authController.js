@@ -115,14 +115,11 @@ const createProject = async (user) => {
             }]
         }]
     })
-    // console.log("**********        User schemma create Project")
-    // console.log(user)
     return project
 }
 
 const newProject = async (req, res, next) => {
     const { activeProject, _id, username } = req.body.user;
-    // console.log(activeProject, _id, username);
     try {
         const user = await User.findOne({ _id }).exec();
         user.activeProject = activeProject;
@@ -130,29 +127,45 @@ const newProject = async (req, res, next) => {
         user.projects.push(resNewProject._id);
         const updatedUser = await user.save((err, updatedUser) => {
             if (err) {
-                // console.log(err);
                 res.status(400).send({ message: err });
             } else {
-                // console.log(updatedUser);
                 res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
             }
         });
-        // res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
     } catch (err) {
-        // console.log("catch error");
-        // console.log(err);
         res.status(500).send({ message: "Server error" });
     }
 };
+
+const newChannel = async (req, res, next) => {
+    const { newChannel, projectId } = req.body;
+
+    try {
+        if (!newChannel || !projectId) {
+            res.status(400).send({ status: 400, message: "Bad request" })
+        }
+        const newObjChannel = {
+            name: newChannel,
+            messages: []
+        }
+        const project = await Project.findOneAndUpdate(
+            { "_id": projectId },
+            { $push: { channels: newObjChannel } },
+            { new: true }
+        )
+        if (!project) {
+            res.status(400).send({ status: 400, message: "Project Not found" });
+        }
+        res.status(201).send({ status: 201, message: `New Channel ${newChannel} created` });
+    } catch (error) {
+
+    }
+}
 
 const createSession = async (user, statusCode, req, res) => {
     const token = user.getSignedJwtToken();
     console.log(token);
     user.password = null;
-    // console.log(req.session);
-    // console.log(req.sessionID);
-    // console.log("user");
-    // console.log(user);
     req.session.token = token;
     req.session.authenticated = true
     req.session.user = user;
@@ -174,28 +187,6 @@ const sendToken = (user, statusCode, req, res) => {
         });
 };
 
-// const deleteProject = async (req, res, next) => {
-//     const { projectId, user } = req.body;
-//     console.log("********************* delete req.body");
-//     console.log(req.body);
-//     try {
-//         if (!projectId) {
-//             res.status(400).send({ status: 400, message: "Provide the ID of the project" });
-//             return;
-//         }
-//         const project = await Project.findOneAndDelete({ "_id": projectId });
-//         if (!project) {
-//             res.status(404).send({ status: 404, message: "Project not found" });
-//             return;
-//         }
-//         res.status(200).send({ status: 200, message: "Deleted project" });
-//     } catch (error) {
-//         console.log("*********************                     Catch error");
-//         console.log(error);
-//         res.status(500).send({ status: 500, message: "Server error" });
-//     }
-// };
-
 const deleteProject = async (req, res, next) => {
     const { projectId, user } = req.body;
     const { _id } = req.body.user;
@@ -215,7 +206,7 @@ const deleteProject = async (req, res, next) => {
                 res.status(404).send({ status: 404, message: "Project not found" });
                 return;
             }
-            res.status(200).send({ status: 200, message: "Deleted project" });
+            res.status(200).send({ status: 200, message: "Project deleted" });
         }
     } catch (error) {
         res.status(500).send({ status: 500, message: "Server error" });
@@ -247,5 +238,6 @@ module.exports = {
     verifyToken,
     logout,
     newProject,
-    deleteProject
+    deleteProject,
+    newChannel
 }

@@ -1,5 +1,5 @@
-##### Delete an entire project
-- endpoint "/api/deleteproject", 
+##### Delete Project
+- endpoint "/api/deleteproject"
 - method: delete
 - protected route: true
 - request body: sessionToken, authenticated, user, projectId
@@ -21,4 +21,56 @@
     "projectId": "63edfcf20464988652e34d48"
 }
 ```
+
+
+##### Create Channel
+- endpoint "/api/newchannel"
+- method: post
+- protected route: true
+- request body: sessionToken: string, user: {}, projectId: string, newChannel: string
+- cookie: withCredentials: true
+ 
+```javascript
+    {
+    "newChannel": "Meetings",
+    "projectId": "63ef47de74bb7f355622324e",
+    "sessionToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZWY0N2RlNzRiYjdmMzU1NjIyMzI0YiIsImlhdCI6MTY3NjYyNTg4NiwiZXhwIjoxNjc2NjI2NDg2fQ.bp4jP-jWVBWpl-w5u3CBRqVF9pjJx-8QAhi8KSwOAxY",
+        "user": {
+            "_id": "63ef47de74bb7f355622324b",
+            "username": "chat bot 3",
+            "email": "chatbot3@email.com",
+            "activeProject": "DF",
+            "projects": [
+                "63ef47de74bb7f355622324e"
+            ],
+            "__v": 1,
+            "password": null
+        }
+}
+```
+
+##### Create Channel
+- endpoint "/api/newchannel"
+- method: post
+- protected route: true
+- request body: sessionToken: string, user: {}, projectId: string, newChannel: string
+- cookie: withCredentials: true,
+
+```javascript
+    {
+    "newChannel": "Meetings",
+    "projectId": "63ef47de74bb7f355622324e",
+    "sessionToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZWY0N2RlNzRiYjdmMzU1NjIyMzI0YiIsImlhdCI6MTY3NjYyNTg4NiwiZXhwIjoxNjc2NjI2NDg2fQ.bp4jP-jWVBWpl-w5u3CBRqVF9pjJx-8QAhi8KSwOAxY",
+        "user": {
+            "_id": "63ef47de74bb7f355622324b",
+            "username": "chat bot 3",
+            "email": "chatbot3@email.com",
+            "activeProject": "DF",
+            "projects": [
+                "63ef47de74bb7f355622324e"
+            ],
+            "__v": 1,
+            "password": null
+        }
+}
 
