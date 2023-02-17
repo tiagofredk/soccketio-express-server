@@ -96,7 +96,7 @@ const createProject = async (user) => {
                 text: "Welcome, this is the General channel, here you can speak about general topics.",
                 user: {
                     name: "Chat Bot",
-                    // id: "09a5b6bd-cbbd-4591-b189-cef34b1aba7e"
+                    userId: "09a5b6bd-cbbd-4591-b189-cef34b1aba7e"
                 },
                 timestamp: new Date().toISOString()
             }]
@@ -132,14 +132,41 @@ const newProject = async (req, res, next) => {
                 res.status(201).send({ status: 201, message: `new Project ${activeProject}` });
             }
         });
-    } catch (err) {
+    } catch (error) {
+        next(error)
         res.status(500).send({ message: "Server error" });
+    }
+};
+
+const deleteProject = async (req, res, next) => {
+    const { projectId, user } = req.body;
+    const { _id } = req.body.user;
+    try {
+        if (!user || !projectId) {
+            res.status(400).send({ status: 400, message: "Provide the ID of the project" });
+            return;
+        }
+        const userProjectOwner = await User.findOne({ _id }).exec();
+        if (!userProjectOwner) {
+            res.status(400).send({ status: 400, message: "bad request, user not found" });
+        } else {
+            userProjectOwner.projects = userProjectOwner.projects.filter(project => project.toString() !== projectId);
+            await userProjectOwner.save();
+            const project = await Project.findOneAndDelete({ "_id": projectId });
+            if (!project) {
+                res.status(404).send({ status: 404, message: "Project not found" });
+                return;
+            }
+            res.status(200).send({ status: 200, message: "Project deleted" });
+        }
+    } catch (error) {
+        next(error)
+        res.status(500).send({ status: 500, message: "Server error" });
     }
 };
 
 const newChannel = async (req, res, next) => {
     const { newChannel, projectId } = req.body;
-
     try {
         if (!newChannel || !projectId) {
             res.status(400).send({ status: 400, message: "Bad request" })
@@ -158,7 +185,57 @@ const newChannel = async (req, res, next) => {
         }
         res.status(201).send({ status: 201, message: `New Channel ${newChannel} created` });
     } catch (error) {
+        next(error)
+        res.status(500).send({status: 500, message: "Server error"})
+    }
+}
 
+const newChannelMessage = async (req, res, next) => {
+    const {message, channelId } = req.body;
+    const {username, _id} = req.body.user;
+    try {
+        if(!message || !username){
+            res.status(400).send({status:400, message: "Bad request"})
+        }
+        const newMessage = {
+            text: message,
+            user: {
+                name: username,
+                userId: _id
+            },
+            timestamp: new Date().toISOString()
+        }
+        const channel = await Project.findOneAndUpdate(
+            {"channels._id": channelId},
+            {$push: {"channels.$.messages": newMessage}},
+            {new: true}
+            )
+            if(!channel){
+                res.status(400).send({status:400, message: "Channel not found"})
+            }
+            res.status(201).send({status: 201, message: "Message sent"})
+    } catch (error) {
+        next(error)
+        res.status(500).send({status: 500, message: "Server error"});
+    }
+}
+
+const deleteChannel = async (req, res, next) => {
+    const {channelDump, projectId} = req.body
+    try {
+        if(!channelDump || !projectId){
+            res.status(400).send({status: 400, message: "Bad request"});
+        }
+        const project = await Project.findOne({"_id": projectId});
+        if(!project){
+            res.status(400).send({status: 400, message: "Project not found"});
+        }
+        project.channels = project.channels.filter(obj => obj._id.toString() !== channelDump);
+        project.save();
+        res.status(200).send({message: "Channel deleted"});
+    } catch (error) {
+        next(error)
+        res.status(500).send({status:500, message: "Server error"})
     }
 }
 
@@ -187,31 +264,6 @@ const sendToken = (user, statusCode, req, res) => {
         });
 };
 
-const deleteProject = async (req, res, next) => {
-    const { projectId, user } = req.body;
-    const { _id } = req.body.user;
-    try {
-        if (!user || !projectId) {
-            res.status(400).send({ status: 400, message: "Provide the ID of the project" });
-            return;
-        }
-        const userProjectOwner = await User.findOne({ _id }).exec();
-        if (!userProjectOwner) {
-            res.status(400).send({ status: 400, message: "bad request, user not found" });
-        } else {
-            userProjectOwner.projects = userProjectOwner.projects.filter(project => project.toString() !== projectId);
-            await userProjectOwner.save();
-            const project = await Project.findOneAndDelete({ "_id": projectId });
-            if (!project) {
-                res.status(404).send({ status: 404, message: "Project not found" });
-                return;
-            }
-            res.status(200).send({ status: 200, message: "Project deleted" });
-        }
-    } catch (error) {
-        res.status(500).send({ status: 500, message: "Server error" });
-    }
-};
 
 const verifyToken = async (req, res, next) => {
     const token = req.headers['x-access-token'];
@@ -239,5 +291,7 @@ module.exports = {
     logout,
     newProject,
     deleteProject,
-    newChannel
+    newChannel,
+    deleteChannel,
+    newChannelMessage
 }

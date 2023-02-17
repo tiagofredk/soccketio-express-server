@@ -10,11 +10,15 @@ router.post("/api/register", authController.register);
 // after this point routes are protected
 router.use(protect);
 
-router.post("/api/newchannel", (authController.newChannel));
-
 router.post("/api/newproject", (authController.newProject));
 
 router.delete("/api/deleteproject", (authController.deleteProject));
+
+router.post("/api/newchannel", (authController.newChannel));
+
+router.post("/api/newchannelmessage", (authController.newChannelMessage));
+
+router.delete("/api/deletechannel", (authController.deleteChannel));
 
 router.post("/api/logout", (authController.logout));
 
